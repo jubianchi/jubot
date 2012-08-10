@@ -1,0 +1,13 @@
+export PORT=%hubot_listen_port%
+
+export HUBOT_IRC_SERVER=%irc_host%
+export HUBOT_IRC_ROOMS=%irc_rooms_list%
+export HUBOT_IRC_NICK=%irc_nick%
+export HUBOT_IRC_UNFLOOD=false
+export HUBOT_IRC_NICKSERV_PASSWORD=%irc_nickserv_passwd%
+
+export HUBOT_AUTH_ADMIN=%admin_users_list%
+
+export HUBOT_CAT_PORT=%hubot_cat_listen_port%
+
+export HUBOT_GITHUB_USER=%github_username%
