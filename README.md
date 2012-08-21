@@ -16,4 +16,6 @@ v0.8.6
 
 $ npm -v
 1.1.48
+
+$ sudo apt-get install redis-server
 ```
