@@ -23,28 +23,58 @@ HUBOT_HOME="/opt/hubot"
 LOGFILE="/var/log/hubot/hubot.log"
 PIDFILE="/var/run/hubot.pid"
 DAEMON="$HUBOT_HOME/bin/hubot"
-ARGS="-a irc"
+ARGS="-a irc -n jubot"
 ENV="$HUBOT_HOME/env"
 
 set -e
 
+. /lib/lsb/init-functions
+
 case "$1" in
   start)
-        echo -n "Starting $NAME: "
+        log_daemon_msg "Starting $NAME: "
         . $ENV
         start-stop-daemon --start --quiet --pidfile $PIDFILE -c hubot:hubot --make-pidfile --background --chdir $HUBOT_HOME --exec $DAEMON -- $ARGS
-        echo "."
+        log_end_msg 0
         ;;
   stop)
-        echo -n "Stopping $NAME: "
+        log_daemon_msg "Stopping $NAME: "
         start-stop-daemon --stop --quiet --pidfile $PIDFILE
-        echo "."
+        log_end_msg 0
         ;;
 
-    *)
+  restart)
+        log_daemon_msg "Stopping $NAME: "	        
+	start-stop-daemon --stop --quiet --pidfile $PIDFILE
+	log_end_msg 0
+	log_daemon_msg "Starting $NAME: "
+	. $ENV
+        start-stop-daemon --start --quiet --pidfile $PIDFILE -c hubot:hubot --make-pidfile --background --chdir $HUBOT_HOME --exec $DAEMON -- $ARGS
+	log_end_msg 0
+	;;
+
+  status)
+        PID=''
+        if [ -f $PIDFILE ]
+        then
+                PID=$(cat $PIDFILE)
+        fi
+
+        if [ -n "$PID" ]
+        then
+	        echo "$NAME is running (pid $PID)."
+                exit 0
+        else
+                echo "$NAME is not running."
+                exit 1
+        fi
+        ;;
+
+  *)
         N=/etc/init.d/$NAME
         echo "Usage: $N {start|stop}" >&2
         exit 1
         ;;  
-    esac
-    exit
+esac
+
+exit 0
