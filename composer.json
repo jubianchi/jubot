@@ -1,0 +1,27 @@
+{
+    "name": "jubianchi/jubot",
+    "authors": [
+        {
+            "name": "jubianchi",
+            "email": "contact@jubianchi.fr"
+        }
+    ],
+    "minimum-stability": "dev",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/jubianchi/philip.git"
+        }
+    ],
+    "require": {
+        "epochblue/philip": "dev-master",
+        "symfony/console": "dev-master",
+        "knplabs/github-api": "dev-master",
+        "symfony/yaml": "dev-master"
+    },
+    "autoload": {
+        "psr-0": {
+            "jubianchi": "src/"
+        }
+    }
+}

@@ -1,0 +1,25 @@
+hostname:     "irc.freenode.net"
+servername:   "irc.freenode.net"
+port:         6667
+username:     "jubot"
+realname:     "jubot"
+nick:         "jubot"
+debug:        true
+log:          "php://stdout"
+password:     "%password%"
+
+channels:
+    - "%channel%"
+
+admins:
+    - "%admin%"
+
+unflood:
+    interval: 500000,
+    delay:    2000000
+
+github:
+    token:    "%token%"
+
+auth:
+    %nick%:   "%password"
