@@ -21,8 +21,6 @@ class Admin extends AbstractPlugin
 			function(Event $event) use ($self) {
 				$matches = $event->getMatches();
 
-				var_dump($matches);
-
 				$user = $event->getRequest()->getSendingUser();
 				$rooms = explode(' ', $matches['channels']);
 
