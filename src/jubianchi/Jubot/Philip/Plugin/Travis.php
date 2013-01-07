@@ -23,24 +23,25 @@ class Travis extends AbstractPlugin
 	{
 		$self = $this;
 
-		$this->bot->onChannel(
-			'/' . static::EXP_PREFIX . 'status ' . static::EXP_REPO . '/',
-			function(Event $event) use($self) {
-				$matches = $event->getMatches();
-				$username = $matches['username'];
-				$repository = $matches['repository'];
+		$pattern = '/' . static::EXP_PREFIX . 'status ' . static::EXP_REPO . '/';
+		$callback = function(Event $event) use($self) {
+			$matches = $event->getMatches();
+			$username = $matches['username'];
+			$repository = $matches['repository'];
 
-				$repo = $self->getClient()->api('builds')->all($username, $repository);
-				$build = current($repo);
-				$build = $self->getClient()->api('builds')->show($username, $repository, $build['id']);
+			$repo = $self->getClient()->api('builds')->all($username, $repository);
+			$build = current($repo);
+			$build = $self->getClient()->api('builds')->show($username, $repository, $build['id']);
 
-				$event->addResponse(Response::msg($event->getRequest()->getSource(), '#' . $build['number'] . ' ' . $username . '/' . $repository));
-				$event->addResponse(Response::msg($event->getRequest()->getSource(), $build['started_at'] . ' / ' . $build['finished_at']));
-				$event->addResponse(Response::msg($event->getRequest()->getSource(), $build['state'] . (isset($build['status']) ? ' - ' . ((int) $build['status'] === 0 ? 'stable' : 'unstable') : '')));
-				$event->addResponse(Response::msg($event->getRequest()->getSource(), sprintf('https://travis-ci.org/%s/%s/builds/%d', $username, $repository, $build['id'])));
+			$event->addResponse(Response::msg($event->getRequest()->getSource(), '#' . $build['number'] . ' ' . $username . '/' . $repository));
+			$event->addResponse(Response::msg($event->getRequest()->getSource(), $build['started_at'] . ' / ' . $build['finished_at']));
+			$event->addResponse(Response::msg($event->getRequest()->getSource(), $build['state'] . (isset($build['status']) ? ' - ' . ((int) $build['status'] === 0 ? 'stable' : 'unstable') : '')));
+			$event->addResponse(Response::msg($event->getRequest()->getSource(), sprintf('https://travis-ci.org/%s/%s/builds/%d', $username, $repository, $build['id'])));
 
-			}
-		);
+		};
+
+		$this->bot->onChannel($pattern, $callback);
+		$this->bot->onPrivateMessage($pattern, $callback);
 	}
 
 	public function getConfig($name) {

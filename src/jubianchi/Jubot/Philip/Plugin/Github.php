@@ -25,9 +25,9 @@ class Github extends AbstractPlugin
 	{
 		$self = $this;
 
-		$this->bot->onChannel(
-			'/' . static::EXP_PREFIX . '(?:repos?|repositor(?:y|ies)) (?:find|search) ' . static::EXP_QUERY . static::EXP_OFFSET . '/',
-			function(Event $event) use($self) {
+		$commands = array(
+			'/' . static::EXP_PREFIX . '(?:repos?|repositor(?:y|ies)) (?:find|search) ' . static::EXP_QUERY . static::EXP_OFFSET . '/'
+			=> function(Event $event) use($self) {
 				$matches = $event->getMatches();
 				$query = $matches['query'];
 				$offset = isset($matches['offset']) ? (int) $matches['offset'] : 0;
@@ -54,12 +54,9 @@ class Github extends AbstractPlugin
 						sprintf('%d more repositories', $more)
 					));
 				}
-			}
-		);
-
-		$this->bot->onChannel(
-			'/' . static::EXP_PREFIX . 'issues? (?:find|search)(?: (?P<status>open|close)|) ' . static::EXP_REPO . ' ' . static::EXP_QUERY . static::EXP_OFFSET . '/',
-			function(Event $event) use($self) {
+			},
+			'/' . static::EXP_PREFIX . 'issues? (?:find|search)(?: (?P<status>open|close)|) ' . static::EXP_REPO . ' ' . static::EXP_QUERY . static::EXP_OFFSET . '/'
+			=> function(Event $event) use($self) {
 				$matches = $event->getMatches();
 				$username = $matches['username'];
 				$repository = $matches['repository'];
@@ -95,12 +92,9 @@ class Github extends AbstractPlugin
 						sprintf('%d more issues', $more)
 					));
 				}
-			}
-		);
-
-		$this->bot->onChannel(
-			'/' . static::EXP_PREFIX . 'issues? show ' . static::EXP_REPO . ' \#?(?P<id>\d+)/',
-			function(Event $event) use($self) {
+			},
+			'/' . static::EXP_PREFIX . 'issues? show ' . static::EXP_REPO . ' \#?(?P<id>\d+)/'
+			=> function(Event $event) use($self) {
 				$matches = $event->getMatches();
 				$username = $matches['username'];
 				$repository = $matches['repository'];
@@ -126,6 +120,11 @@ class Github extends AbstractPlugin
 				}
 			}
 		);
+
+		foreach($commands as $pattern => $callback) {
+			$this->bot->onChannel($pattern, $callback);
+			$this->bot->onPrivateMessage($pattern, $callback);
+		}
 	}
 
 	public function getConfig($name) {
