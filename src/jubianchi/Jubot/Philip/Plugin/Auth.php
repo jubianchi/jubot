@@ -21,7 +21,7 @@ class Auth extends AbstractPlugin
 		$this->getDatabase();
 
 		$this->bot->onPrivateMessage(
-			'/!auth status/',
+			'/^!auth status/',
 			function(Event $event) use($self) {
 				$user = $event->getRequest()->getSendingUser();
 
@@ -31,7 +31,7 @@ class Auth extends AbstractPlugin
 		);
 
 		$this->bot->onPrivateMessage(
-			'/!(?:auth )?logout/',
+			'/^!(?:auth )?logout/',
 			function(Event $event) use($self) {
 				$user = $event->getRequest()->getSendingUser();
 
@@ -46,7 +46,7 @@ class Auth extends AbstractPlugin
 		);
 
 		$this->bot->onPrivateMessage(
-			'/!(?:auth )?login (.*)/',
+			'/^!(?:auth )?login (.*)/',
 			function(Event $event) use($self) {
 				$matches = $event->getMatches();
 				$user = $event->getRequest()->getSendingUser();

@@ -4,14 +4,14 @@ namespace jubianchi\Jubot\Philip\Plugin;
 use Philip\AbstractPlugin;
 use Philip\IRC\Event;
 use Philip\IRC\Response;
-use jubianchi\jubot\Travis\Client;
+use jubianchi\Jubot\Travis\Client;
 
 class Travis extends AbstractPlugin
 {
 	private $client;
 	private $config;
 
-	const EXP_PREFIX = '!travis ';
+	const EXP_PREFIX = '^!travis ';
 	const EXP_REPO   = '(?P<username>[^ ]+)\/(?P<repository>[^ ]+)';
 
 	public function getName()

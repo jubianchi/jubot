@@ -11,7 +11,7 @@ class Github extends AbstractPlugin
 	private $client;
 	private $config;
 
-	const EXP_PREFIX = '!(?:gh|github) ';
+	const EXP_PREFIX = '^!(?:gh|github) ';
 	const EXP_QUERY  = '"(?P<query>.*)"';
 	const EXP_OFFSET = '(?: (?P<offset>\d+)$|)';
 	const EXP_REPO   = '(?P<username>[^ ]+)\/(?P<repository>[^ ]+)';
