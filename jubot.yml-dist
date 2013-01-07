@@ -23,3 +23,8 @@ github:
 
 auth:
     %nick%:   "%password"
+
+logger:
+    path: log
+    channels:
+        - "%channel%"
