@@ -7,12 +7,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jubianchi/philip.git",
-                "reference": "4e52239d08f31901108ef271c7cd358558ad9570"
+                "reference": "48332db3338edb82bc4af65173e1701e8e07f9b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jubianchi/philip/zipball/4e52239d08f31901108ef271c7cd358558ad9570",
-                "reference": "4e52239d08f31901108ef271c7cd358558ad9570",
+                "url": "https://api.github.com/repos/jubianchi/philip/zipball/48332db3338edb82bc4af65173e1701e8e07f9b4",
+                "reference": "48332db3338edb82bc4af65173e1701e8e07f9b4",
                 "shasum": ""
             },
             "require": {
@@ -20,7 +20,7 @@
                 "monolog/monolog": "1.2.*",
                 "symfony/event-dispatcher": "2.1.*"
             },
-            "time": "2013-01-06 22:23:53",
+            "time": "2013-01-11 00:26:31",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -268,12 +268,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/EventDispatcher",
-                "reference": "1018313ea65428d645cd778bc354932d64a0f4e9"
+                "reference": "593ca3bb9ed5eccc1156c402102d9b5bb07cd783"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/EventDispatcher/archive/1018313ea65428d645cd778bc354932d64a0f4e9.zip",
-                "reference": "1018313ea65428d645cd778bc354932d64a0f4e9",
+                "url": "https://github.com/symfony/EventDispatcher/archive/593ca3bb9ed5eccc1156c402102d9b5bb07cd783.zip",
+                "reference": "593ca3bb9ed5eccc1156c402102d9b5bb07cd783",
                 "shasum": ""
             },
             "require": {
@@ -286,7 +286,7 @@
                 "symfony/dependency-injection": "2.1.*",
                 "symfony/http-kernel": "2.1.*"
             },
-            "time": "2013-01-04 17:00:54",
+            "time": "2013-01-09 08:51:07",
             "type": "library",
             "installation-source": "source",
             "autoload": {

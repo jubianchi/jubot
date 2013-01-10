@@ -30,6 +30,7 @@ class Bot extends BaseCommand
 
 		$bot = new Philip($config);
 		$bot->loadPlugin('\\jubianchi\\Jubot\\Philip\\Plugin\\Auth');
+		$bot->loadPlugin('\\jubianchi\\Jubot\\Philip\\Plugin\\Audience');
 		$bot->loadPlugin('\\jubianchi\\Jubot\\Philip\\Plugin\\Admin');
 		$bot->loadPlugin('\\jubianchi\\Jubot\\Philip\\Plugin\\Github');
 		$bot->loadPlugin('\\jubianchi\\Jubot\\Philip\\Plugin\\Travis');
