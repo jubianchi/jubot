@@ -35,7 +35,7 @@ class Admin extends AbstractPlugin
 		);
 
 		$this->bot->onPrivateMessage(
-			'/^!leave (?P<channels>(?:[#&][^\x07\x2C\s]{0,200} ?)*)/',
+			'/^!(?:leave|part) (?P<channels>(?:[#&][^\x07\x2C\s]{0,200} ?)*)/',
 			function(Event $event) use ($self) {
 				$matches = $event->getMatches();
 				$user = $event->getRequest()->getSendingUser();
@@ -71,6 +71,18 @@ class Admin extends AbstractPlugin
 				}
 			}
 		);
+
+		$this->bot->onPrivateMessage(
+			'/^!nick (?P<nick>[^\s]+)/',
+			function(Event $event) use ($self) {
+				$matches = $event->getMatches();
+				$user = $event->getRequest()->getSendingUser();
+
+				if ($self->hasCredential($user)) {
+					$event->addResponse(Response::nick($matches['nick']));
+				}
+			}
+		);
 	}
 
 	public function displayHelp(Event $event)
@@ -81,6 +93,7 @@ class Admin extends AbstractPlugin
 			$event->addResponse(Response::msg($event->getRequest()->getSource(), '*    [priv] !join <#channel[ #channel]>'));
 			$event->addResponse(Response::msg($event->getRequest()->getSource(), '*    [priv] !leave <#channel[ #channel]>'));
 			$event->addResponse(Response::msg($event->getRequest()->getSource(), '*    [priv] !say <#channel|nick> <message>'));
+			$event->addResponse(Response::msg($event->getRequest()->getSource(), '*    [priv] !nick <nick>'));
 			$event->addResponse(Response::msg($event->getRequest()->getSource(), '*'));
 		}
 	}
