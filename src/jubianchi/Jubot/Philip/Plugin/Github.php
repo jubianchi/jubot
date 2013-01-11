@@ -141,7 +141,7 @@ class Github extends AbstractPlugin
         $event->addResponse(Response::msg($event->getRequest()->getSource(), '* Github'));
         $event->addResponse(Response::msg($event->getRequest()->getSource(), '*    !github repos search "<query>" [<page>]'));
         $event->addResponse(Response::msg($event->getRequest()->getSource(), '*    !github issues search [open|closed] <username>/<repository> "<query>" [<page>]'));
-        $event->addResponse(Response::msg($event->getRequest()->getSource(), '*    !github issue show <id>'));
+        $event->addResponse(Response::msg($event->getRequest()->getSource(), '*    !github issue show <username>/<repository> <id>'));
         $event->addResponse(Response::msg($event->getRequest()->getSource(), '*'));
     }
 }
