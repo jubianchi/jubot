@@ -115,7 +115,6 @@ class Client extends BaseClient
         return $this->options[$name];
     }
 
-
     /**
      * @param string $name
      * @param mixed  $value

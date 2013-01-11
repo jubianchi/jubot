@@ -10,32 +10,32 @@ use Philip\Philip;
 
 class Bot extends BaseCommand
 {
-	public function __construct($name = null)
-	{
-		parent::__construct($name ?: 'bot');
-	}
+    public function __construct($name = null)
+    {
+        parent::__construct($name ?: 'bot');
+    }
 
-	protected function configure()
-	{
-		parent::configure();
+    protected function configure()
+    {
+        parent::configure();
 
-		$this
-			->addArgument('config', InputArgument::OPTIONAL, 'Configuration file', 'jubot.yml')
-		;
-	}
+        $this
+            ->addArgument('config', InputArgument::OPTIONAL, 'Configuration file', 'jubot.yml')
+        ;
+    }
 
-	protected function execute(InputInterface $input, OutputInterface $output)
-	{
-		$config = Yaml::parse(file_get_contents($input->getArgument('config')));
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $config = Yaml::parse(file_get_contents($input->getArgument('config')));
 
-		$bot = new Philip($config);
-		$bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\Auth($bot));
-		$bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\Audience($bot));
-		$bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\Admin($bot));
-		$bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\Github($bot));
-		$bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\Travis($bot));
-		$bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\Logger($bot));
+        $bot = new Philip($config);
+        $bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\Auth($bot));
+        $bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\Audience($bot));
+        $bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\Admin($bot));
+        $bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\Github($bot));
+        $bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\Travis($bot));
+        $bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\Logger($bot));
 
-		$bot->run();
-	}
+        $bot->run();
+    }
 }
