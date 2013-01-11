@@ -26,8 +26,6 @@ class Logger extends AbstractPlugin
 				$matches = $event->getMatches();
 				$file = $self->getConfig('path') . DIRECTORY_SEPARATOR . trim($event->getRequest()->getSource(), '#');
 
-				var_dump($matches);
-
 				try {
 					$since = new \DateTime(isset($matches['since']) ? $matches['since'] : '1 hour ago');
 					$until = new \DateTime(isset($matches['until']) ? $matches['until'] : 'now');

@@ -33,7 +33,7 @@ class Audience extends AbstractPlugin
 			$event->addResponse(
 				Response::msg(
 					$channel,
-					sprintf('New audience record : %d nick(s)', $this->records[$channel])
+					sprintf('New audience record: %d nick(s)', $this->records[$channel])
 				)
 			);
 		}
@@ -67,7 +67,7 @@ class Audience extends AbstractPlugin
 				Response::msg(
 					$channel,
 					sprintf(
-						'Audience record : %d nick(s) on %s',
+						'Audience record: %d nick(s) on %s',
 						$this->records[$channel],
 						$this->dates[$channel]
 					)
@@ -78,14 +78,15 @@ class Audience extends AbstractPlugin
 		}
 	}
 
-	public function displayCurrent($channel, Event $event)
+	public function displayCurrent($channel, Event $event, $user = null)
 	{
 		if (isset($this->nicks[$channel]) && $this->nicks[$channel] > 0) {
 			$event->addResponse(
 				Response::msg(
-					$channel,
+					$user ?: $channel,
 					sprintf(
-						'Current audience : %d nick(s)',
+						'Current audience%s: %d nick(s)',
+						$user ? ' on ' . $channel : '',
 						$this->nicks[$channel]
 					)
 				)
@@ -110,7 +111,7 @@ class Audience extends AbstractPlugin
 		});
 
 		$this->bot->onChannel(
-			'/^!audience/',
+			'/^!audience$/',
 			function(Event $event) use($self) {
 				$channel = $event->getRequest()->getSource();
 				$self->displayRecord($channel, $event);
@@ -130,12 +131,24 @@ class Audience extends AbstractPlugin
 				}
 			}
 		);
+
+		$this->bot->onPrivateMessage(
+			'/^!audience (?P<channel>([#&][^\x07\x2C\s]{0,200}))/',
+			function(Event $event) use($self) {
+				$matches = $event->getMatches();
+				$channel = $matches['channel'];
+				$user = $event->getRequest()->getSendingUser();
+
+				$self->displayCurrent($channel, $event, $user);
+			}
+		);
 	}
 
 	public function displayHelp(Event $event)
 	{
 		$event->addResponse(Response::msg($event->getRequest()->getSource(), '* Audience'));
 		$event->addResponse(Response::msg($event->getRequest()->getSource(), '*    !audience'));
+		$event->addResponse(Response::msg($event->getRequest()->getSource(), '*    [priv] !audience <#channel>'));
 
 		if ($this->hasCredential($event->getRequest()->getSendingUser())) {
 			$event->addResponse(Response::msg($event->getRequest()->getSource(), '*    [priv] !audience add <#channel> <audience>'));
