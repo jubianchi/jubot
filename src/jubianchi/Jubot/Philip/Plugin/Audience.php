@@ -30,7 +30,12 @@ class Audience extends AbstractPlugin
 			$this->records[$channel] = $this->nicks[$channel];
 			$this->dates[$channel] = date('d/m/Y H:i:s');
 
-			$event->addResponse(Response::msg($channel, 'New audience record : ' . $this->records[$channel]));
+			$event->addResponse(
+				Response::msg(
+					$channel,
+					sprintf('New audience record : %d nick(s)', $this->records[$channel])
+				)
+			);
 		}
 	}
 
@@ -62,7 +67,7 @@ class Audience extends AbstractPlugin
 				Response::msg(
 					$channel,
 					sprintf(
-						'Audience record : %d on %s',
+						'Audience record : %d nick(s) on %s',
 						$this->records[$channel],
 						$this->dates[$channel]
 					)
@@ -70,6 +75,21 @@ class Audience extends AbstractPlugin
 			);
 		} else {
 			$event->addResponse(Response::msg($channel, 'No audience record'));
+		}
+	}
+
+	public function displayCurrent($channel, Event $event)
+	{
+		if (isset($this->nicks[$channel]) && $this->nicks[$channel] > 0) {
+			$event->addResponse(
+				Response::msg(
+					$channel,
+					sprintf(
+						'Current audience : %d nick(s)',
+						$this->nicks[$channel]
+					)
+				)
+			);
 		}
 	}
 
@@ -94,6 +114,7 @@ class Audience extends AbstractPlugin
 			function(Event $event) use($self) {
 				$channel = $event->getRequest()->getSource();
 				$self->displayRecord($channel, $event);
+				$self->displayCurrent($channel, $event);
 			}
 		);
 
