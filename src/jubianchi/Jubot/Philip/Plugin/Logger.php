@@ -7,8 +7,6 @@ use Philip\IRC\Response;
 
 class Logger extends AbstractPlugin
 {
-	private $config;
-
 	public function getName()
 	{
 		return 'logger';
@@ -16,15 +14,15 @@ class Logger extends AbstractPlugin
 
 	public function init()
 	{
-		$self = $this;
+		$config = $this->config;
 
 		$this->bot->onChannel('/.*/', $this->getLoggerCallback());
 
 		$this->bot->onChannel(
 			'/^!log (?:(?P<since>[a-zA-Z0-9][a-zA-Z0-9 +\-]*)|)(?:\.\.(?P<until>[a-zA-Z0-9][a-zA-Z0-9 +\-]*?))?(?: -(?:f |-from=)(?P<from>[a-zA-Z][a-zA-Z0-9\-\[\]\\`\^{}]*)|$)/',
-			function(Event $event) use($self) {
+			function(Event $event) use($config) {
 				$matches = $event->getMatches();
-				$file = $self->getConfig('path') . DIRECTORY_SEPARATOR . trim($event->getRequest()->getSource(), '#');
+				$file = $config['path'] . DIRECTORY_SEPARATOR . trim($event->getRequest()->getSource(), '#');
 
 				try {
 					$since = new \DateTime(isset($matches['since']) ? $matches['since'] : '1 hour ago');
@@ -68,33 +66,34 @@ class Logger extends AbstractPlugin
 		$self = $this;
 
 		return function(Event $event) use($self) {
-			if(in_array($event->getRequest()->getSource(), $self->getConfig('channels'))) {
-				$log = sprintf(
-					"%s\t%-20s\t%s" . PHP_EOL,
-					date('m/d/Y H:i:s'),
-					$event->getRequest()->getSendingUser(),
-					$event->getRequest()->getMessage()
-				);
-				$file = $self->getConfig('path') . DIRECTORY_SEPARATOR . trim($event->getRequest()->getSource(), '#');
-
-				$handle = fopen($file, 'a+');
-				fwrite($handle, $log);
-				fclose($handle);
-			}
+			$self->log($event);
 		};
 	}
 
-	public function getConfig($name) {
-		if(null === $this->config) {
-			$config = $this->bot->getConfig();
-			$this->config = $config['logger'];
+	public function log(Event $event)
+	{
+		if(in_array($event->getRequest()->getSource(), $this->config['channels'])) {
+			$log = sprintf(
+				"%s\t%-20s\t%s" . PHP_EOL,
+				date('m/d/Y H:i:s'),
+				$event->getRequest()->getSendingUser(),
+				$event->getRequest()->getMessage()
+			);
+			$file = $this->config['path'] . DIRECTORY_SEPARATOR . trim($event->getRequest()->getSource(), '#&!+');
 
-			if(false === is_dir($this->getConfig('path'))) {
-				mkdir($this->getConfig('path'), 0777, true);
-			}
+			$handle = fopen($file, 'a+');
+			fwrite($handle, $log);
+			fclose($handle);
 		}
+	}
 
-		return $this->config[$name];
+	public function boot(array $config = array())
+	{
+		parent::boot($config);
+
+		if(false === is_dir($config['path'])) {
+			mkdir($config['path'], 0777, true);
+		}
 	}
 
 	public function displayHelp(Event $event)

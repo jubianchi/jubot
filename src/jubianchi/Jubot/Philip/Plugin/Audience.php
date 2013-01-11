@@ -39,14 +39,42 @@ class Audience extends AbstractPlugin
 		}
 	}
 
+	public function initialize($channel, Event $event, array $nicks)
+	{
+		$patterns = $this->getPatterns($channel);
+
+		$botcfg = $this->bot->getConfig();
+		$patterns[] = $botcfg['nick'];
+
+		$nicks = array_filter(
+			$nicks,
+			function($nick) use($patterns, $channel) {
+				$nick = ltrim($nick, '@+');
+
+				foreach ($patterns as $pattern) {
+					if(@preg_match($pattern, $nick) || $nick === $pattern) {
+						return false;
+					}
+				}
+
+				return true;
+			}
+		);
+
+		$this->nicks[$channel] = count($nicks);
+		$this->record($channel, $event);
+	}
+
 	public function increment($channel, Event $event, $increment = 1)
 	{
 		if(false === isset($this->nicks[$channel])) {
 			$this->nicks[$channel] = 0;
 		}
 
-		$this->nicks[$channel] += $increment;
-		$this->record($channel, $event);
+		if($this->shouldCount($channel, $event)) {
+			$this->nicks[$channel] += $increment;
+			$this->record($channel, $event);
+		}
 	}
 
 	public function decrement($channel, Event $event, $decrement = 1)
@@ -55,9 +83,30 @@ class Audience extends AbstractPlugin
 			$this->nicks[$channel] = 0;
 		}
 
-		$this->nicks[$channel] -= $decrement;
-		$this->nicks[$channel] = $this->nicks[$channel] < 0 ? 0 : $this->nicks[$channel];
-		$this->record($channel, $event);
+		if($this->shouldCount($channel, $event)) {
+			$this->nicks[$channel] -= $decrement;
+			$this->nicks[$channel] = $this->nicks[$channel] < 0 ? 0 : $this->nicks[$channel];
+			$this->record($channel, $event);
+		}
+	}
+
+	protected function getPatterns($channel)
+	{
+		return isset($this->config['channels'][$channel]) ? $this->config['channels'][$channel] : array();
+	}
+
+	protected function shouldCount($channel, Event $event)
+	{
+		$nick = $event->getRequest()->getSendingUser();
+		$nick = ltrim($nick, '@+');
+
+		foreach ($this->getPatterns($channel) as $pattern) {
+			if(@preg_match($pattern, $nick) || $nick === $pattern) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	public function displayRecord($channel, Event $event)
@@ -94,9 +143,38 @@ class Audience extends AbstractPlugin
 		}
 	}
 
+	public function boot(array $config = array())
+	{
+		parent::boot($config);
+
+		$this->bot->send(new Response('NAMES', implode(',', $this->getChannels())));
+	}
+
+	protected function getChannels()
+	{
+		$channels = array();
+		foreach($this->config['channels'] as $key => $value) {
+			$channels[] = is_numeric($key) ? $value : $key;
+		}
+
+		return $channels;
+	}
+
 	public function init()
 	{
 		$self = $this;
+
+		$this->bot->onServer(
+			353,
+			function(Event $event) use($self) {
+				$request = $event->getRequest();
+				$params = $request->getParams();
+				$channel = end($params);
+				$nicks = explode(' ', $request->getMessage());
+
+				$self->initialize($channel, $event, $nicks);
+			}
+		);
 
 		$this->bot->onJoin(function(Event $event) use($self) {
 			$chan = $event->getRequest()->getSource();

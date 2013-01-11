@@ -7,7 +7,6 @@ use Philip\IRC\Response;
 
 class Auth extends AbstractPlugin
 {
-	private $database;
 	private $logged = array();
 
 	public function getName()
@@ -18,7 +17,6 @@ class Auth extends AbstractPlugin
 	public function init()
 	{
 		$self = $this;
-		$this->getDatabase();
 
 		$this->bot->onPrivateMessage(
 			'/^!auth status/',
@@ -73,7 +71,7 @@ class Auth extends AbstractPlugin
 	{
 		$hash = md5($password);
 
-		if(false === array_key_exists($user, $this->database) || $this->database[$user] !== $hash) {
+		if(false === array_key_exists($user, $this->config) || $this->config[$user] !== $hash) {
 			return false;
 		}
 
@@ -98,15 +96,6 @@ class Auth extends AbstractPlugin
 	public function isLoggedIn($user)
 	{
 		return in_array($user, $this->logged);
-	}
-
-	public function getDatabase() {
-		if(null === $this->database) {
-			$config = $this->bot->getConfig();
-			$this->database = $config['auth'];
-		}
-
-		return $this->database;
 	}
 
 	public function displayHelp(Event $event)

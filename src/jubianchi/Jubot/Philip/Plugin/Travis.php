@@ -9,7 +9,6 @@ use jubianchi\Jubot\Travis\Client;
 class Travis extends AbstractPlugin
 {
 	private $client;
-	private $config;
 
 	const EXP_PREFIX = '^!travis ';
 	const EXP_REPO   = '(?P<username>[^ ]+)\/(?P<repository>[^ ]+)';
@@ -42,15 +41,6 @@ class Travis extends AbstractPlugin
 
 		$this->bot->onChannel($pattern, $callback);
 		$this->bot->onPrivateMessage($pattern, $callback);
-	}
-
-	public function getConfig($name) {
-		if(null === $this->config) {
-			$config = $this->bot->getConfig();
-			$this->config = $config['travis'];
-		}
-
-		return $this->config[$name];
 	}
 
 	public function getClient() {

@@ -9,7 +9,6 @@ use Github\Client;
 class Github extends AbstractPlugin
 {
 	private $client;
-	private $config;
 
 	const EXP_PREFIX = '^!(?:gh|github) ';
 	const EXP_QUERY  = '"(?P<query>.*)"';
@@ -127,19 +126,10 @@ class Github extends AbstractPlugin
 		}
 	}
 
-	public function getConfig($name) {
-		if(null === $this->config) {
-			$config = $this->bot->getConfig();
-			$this->config = $config['github'];
-		}
-
-		return $this->config[$name];
-	}
-
 	public function getClient() {
 		if(null === $this->client) {
 			$this->client = new Client();
-			$this->client->authenticate($this->getConfig('token'), null, Client::AUTH_HTTP_TOKEN);
+			$this->client->authenticate($this->config['token'], null, Client::AUTH_HTTP_TOKEN);
 		}
 
 		return $this->client;
