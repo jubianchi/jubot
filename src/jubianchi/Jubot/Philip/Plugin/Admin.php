@@ -7,6 +7,8 @@ use Philip\IRC\Response;
 
 class Admin extends AbstractPlugin
 {
+    public $user;
+
     public function getName()
     {
         return 'admin';
@@ -15,6 +17,16 @@ class Admin extends AbstractPlugin
     public function init()
     {
         $self = $this;
+
+        $this->bot->onServer(
+            433,
+            function(Event $event) use ($self) {
+                $request = $event->getRequest();
+
+                $event->addResponse(Response::msg($self->user, $request->getMessage()));
+                $self->user = null;
+            }
+        );
 
         $this->bot->onPrivateMessage(
             '/^!join (?P<channels>(?:[#&][^\x07\x2C\s]{0,200} ?)*)/',
@@ -77,6 +89,8 @@ class Admin extends AbstractPlugin
             function(Event $event) use ($self) {
                 $matches = $event->getMatches();
                 $user = $event->getRequest()->getSendingUser();
+
+                $self->user = $user;
 
                 if ($self->hasCredential($user)) {
                     $event->addResponse(Response::nick($matches['nick']));

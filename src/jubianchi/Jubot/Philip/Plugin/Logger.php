@@ -18,13 +18,13 @@ class Logger extends AbstractPlugin
 
         $this->bot->onChannel(
             '/^!log (?:(?P<since>[a-zA-Z0-9][a-zA-Z0-9 +\-]*)|)(?:\.\.(?P<until>[a-zA-Z0-9][a-zA-Z0-9 +\-]*?))?(?: -(?:f |-from=)(?P<from>[a-zA-Z][a-zA-Z0-9\-\[\]\\`\^{}]*)|$)/',
-			$this->getLogCallback()
+            $this->getLogCallback()
         );
 
-		$this->bot->onPrivateMessage(
-			'/^!log (?P<channel>([#&][^\x07\x2C\s]{0,200})) (?:(?P<since>[a-zA-Z0-9][a-zA-Z0-9 +\-]*)|)(?:\.\.(?P<until>[a-zA-Z0-9][a-zA-Z0-9 +\-]*?))?(?: -(?:f |-from=)(?P<from>[a-zA-Z][a-zA-Z0-9\-\[\]\\`\^{}]*)|$)/',
-			$this->getLogCallback()
-		);
+        $this->bot->onPrivateMessage(
+            '/^!log (?P<channel>([#&][^\x07\x2C\s]{0,200})) (?:(?P<since>[a-zA-Z0-9][a-zA-Z0-9 +\-]*)|)(?:\.\.(?P<until>[a-zA-Z0-9][a-zA-Z0-9 +\-]*?))?(?: -(?:f |-from=)(?P<from>[a-zA-Z][a-zA-Z0-9\-\[\]\\`\^{}]*)|$)/',
+            $this->getLogCallback()
+        );
     }
 
     protected function getLoggerCallback()
@@ -36,14 +36,14 @@ class Logger extends AbstractPlugin
         };
     }
 
-	protected function getLogCallback()
-	{
-		$self = $this;
+    protected function getLogCallback()
+    {
+        $self = $this;
 
-		return function(Event $event) use ($self) {
-			$self->display($event);
-		};
-	}
+        return function(Event $event) use ($self) {
+            $self->display($event);
+        };
+    }
 
     public function log(Event $event)
     {
@@ -62,45 +62,45 @@ class Logger extends AbstractPlugin
         }
     }
 
-	public function display(Event $event)
-	{
-		$matches = $event->getMatches();
-		$channel = isset($matches['channel']) ? $matches['channel'] : $event->getRequest()->getSource();
-		$file = $this->config['path'] . DIRECTORY_SEPARATOR . trim($channel, '#');
+    public function display(Event $event)
+    {
+        $matches = $event->getMatches();
+        $channel = isset($matches['channel']) ? $matches['channel'] : $event->getRequest()->getSource();
+        $file = $this->config['path'] . DIRECTORY_SEPARATOR . trim($channel, '#');
 
-		try {
-			$since = new \DateTime(isset($matches['since']) ? $matches['since'] : '1 hour ago');
-			$until = new \DateTime(isset($matches['until']) ? $matches['until'] : 'now');
-			$from = isset($matches['from']) ? trim($matches['from']) : null;
+        try {
+            $since = new \DateTime(isset($matches['since']) ? $matches['since'] : '1 hour ago');
+            $until = new \DateTime(isset($matches['until']) ? $matches['until'] : 'now');
+            $from = isset($matches['from']) ? trim($matches['from']) : null;
 
-			if (file_exists($file)) {
-				foreach (file($file) as $line) {
-					$parts = explode("\t", $line);
+            if (file_exists($file)) {
+                foreach (file($file) as $line) {
+                    $parts = explode("\t", $line);
 
-					try {
-						$date = new \DateTime($parts[0]);
+                    try {
+                        $date = new \DateTime($parts[0]);
 
-						if(
-							$date >= $since && $date < $until &&
-							(null === $from || $event->getRequest()->getSendingUser() === $from)
-						) {
-							$event->addResponse(
-								Response::msg(
-									$event->getRequest()->getSendingUser(),
-									sprintf(
-										'[%s]  <%s>  %s',
-										$date->format('d/m/Y H:i:s'),
-										trim($parts[1]),
-										trim($parts[2])
-									)
-								)
-							);
-						}
-					} catch (\Exception $exception) {}
-				}
-			}
-		} catch (\Exception $exception) {}
-	}
+                        if(
+                            $date >= $since && $date < $until &&
+                            (null === $from || $event->getRequest()->getSendingUser() === $from)
+                        ) {
+                            $event->addResponse(
+                                Response::msg(
+                                    $event->getRequest()->getSendingUser(),
+                                    sprintf(
+                                        '[%s]  <%s>  %s',
+                                        $date->format('d/m/Y H:i:s'),
+                                        trim($parts[1]),
+                                        trim($parts[2])
+                                    )
+                                )
+                            );
+                        }
+                    } catch (\Exception $exception) {}
+                }
+            }
+        } catch (\Exception $exception) {}
+    }
 
     public function boot(array $config = array())
     {

@@ -8,32 +8,29 @@ use Philip\IRC\Response;
 class Audience extends AbstractPlugin
 {
     private $nicks = array();
-    private $records = array();
-    private $dates = array();
 
     public function getName()
     {
         return 'audience';
     }
 
-    protected function record($channel, Event $event)
+    public function getBrain()
     {
-        if (false === isset($this->records[$channel])) {
-            $this->records[$channel] = 0;
-        }
+        return $this->bot->getPlugin('brain');
+    }
 
-        if (false === isset($this->nicks[$channel])) {
-            $this->nicks[$channel] = 0;
-        }
+    protected function record($channel, Event $event, $count)
+    {
+        $record = $this->getBrain()->get(sprintf('audience.%s.record', $channel), 0);
 
-        if ($this->nicks[$channel] > $this->records[$channel]) {
-            $this->records[$channel] = $this->nicks[$channel];
-            $this->dates[$channel] = date('d/m/Y H:i:s');
+        if ($count > $record) {
+            $this->getBrain()->set(sprintf('audience.%s.record', $channel), $count);
+            $this->getBrain()->set(sprintf('audience.%s.date', $channel), date('d/m/Y H:i:s'));
 
             $event->addResponse(
                 Response::msg(
                     $channel,
-                    sprintf('New audience record: %d nick(s)', $this->records[$channel])
+                    sprintf('New audience record: %d nick(s)', $count)
                 )
             );
         }
@@ -62,7 +59,7 @@ class Audience extends AbstractPlugin
         );
 
         $this->nicks[$channel] = count($nicks);
-        $this->record($channel, $event);
+        $this->record($channel, $event, $this->nicks[$channel]);
     }
 
     protected function getPatterns($channel)
@@ -72,15 +69,19 @@ class Audience extends AbstractPlugin
 
     public function displayRecord($channel, Event $event, $user = null)
     {
-        if (isset($this->records[$channel]) && $this->records[$channel] > 0) {
+        $record = $this->getBrain()->get(sprintf('audience.%s.record', $channel), 0);
+
+        if ($record > 0) {
+            $date = $this->getBrain()->get(sprintf('audience.%s.date', $channel), 0);
+
             $event->addResponse(
                 Response::msg(
                     $channel,
                     sprintf(
                         'Audience record%s: %d nick(s) on %s',
-						$user ? ' on ' . $channel : '',
-						$this->records[$channel],
-                        $this->dates[$channel]
+                        $user ? ' on ' . $channel : '',
+                        $record,
+                        $date
                     )
                 )
             );
@@ -141,13 +142,13 @@ class Audience extends AbstractPlugin
         $this->bot->onJoin(function(Event $event) use ($self) {
             $chan = $event->getRequest()->getSource();
 
-			$event->addResponse(new Response('NAMES', $chan));
+            $event->addResponse(new Response('NAMES', $chan));
         });
 
         $this->bot->onPart(function(Event $event) use ($self) {
             $chan = $event->getRequest()->getSource();
 
-			$event->addResponse(new Response('NAMES', $chan));
+            $event->addResponse(new Response('NAMES', $chan));
         });
 
         $this->bot->onChannel(
@@ -166,7 +167,7 @@ class Audience extends AbstractPlugin
                 $channel = $matches['channel'];
 
                 if ($self->hasCredential($event->getRequest()->getSendingUser())) {
-					$event->addResponse(new Response('NAMES', $channel));
+                    $event->addResponse(new Response('NAMES', $channel));
                 }
             }
         );
@@ -178,7 +179,7 @@ class Audience extends AbstractPlugin
                 $channel = $matches['channel'];
                 $user = $event->getRequest()->getSendingUser();
 
-				$self->displayRecord($channel, $event, $user);
+                $self->displayRecord($channel, $event, $user);
                 $self->displayCurrent($channel, $event, $user);
             }
         );

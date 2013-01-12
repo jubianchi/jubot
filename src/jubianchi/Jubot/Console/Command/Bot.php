@@ -29,12 +29,13 @@ class Bot extends BaseCommand
         $config = Yaml::parse(file_get_contents($input->getArgument('config')));
 
         $bot = new Philip($config);
+        $bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\Brain($bot));
+        $bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\Logger($bot));
         $bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\Auth($bot));
-        $bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\Audience($bot));
         $bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\Admin($bot));
+        $bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\Audience($bot));
         $bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\Github($bot));
         $bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\Travis($bot));
-        $bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\Logger($bot));
 
         $bot->run();
     }

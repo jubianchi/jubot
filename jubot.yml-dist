@@ -28,3 +28,10 @@ logger:
     path: log
     channels:
         - "%channel%"
+
+brain:
+    path: brain
+
+audience:
+    channels:
+        "%channel%": ["/^ChanServ$/", "/^jubot(?:-\w+)?$/"]
