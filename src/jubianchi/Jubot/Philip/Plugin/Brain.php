@@ -25,18 +25,20 @@ class Brain extends AbstractPlugin
             function(Event $event) use ($self, $brain) {
                 $matches = $event->getMatches();
 
-                $values = $self->get($matches['key']);
-                if (false === is_array($values)) {
-                    $values = array($matches['key'] => $values);
-                }
+                if($self->hasCredential($event->getRequest()->getSendingUser())) {
+                    $values = $self->get($matches['key']);
+                    if (false === is_array($values)) {
+                        $values = array($matches['key'] => $values);
+                    }
 
-                foreach ($values as $key => $value) {
-                    $event->addResponse(
-                        Response::msg(
-                            $event->getRequest()->getSource(),
-                            sprintf('%s => %s', $key, $value)
-                        )
-                    );
+                    foreach ($values as $key => $value) {
+                        $event->addResponse(
+                            Response::msg(
+                                $event->getRequest()->getSource(),
+                                sprintf('%s => %s', $key, $value)
+                            )
+                        );
+                    }
                 }
             }
         );
@@ -46,12 +48,14 @@ class Brain extends AbstractPlugin
             function(Event $event) use ($self, $brain) {
                 $matches = $event->getMatches();
 
-                $event->addResponse(
-                    Response::msg(
-                        $event->getRequest()->getSource(),
-                        sprintf('%s => %s', $matches['key'], $self->set($matches['key'], $matches['value']))
-                    )
-                );
+                if($self->hasCredential($event->getRequest()->getSendingUser())) {
+                    $event->addResponse(
+                        Response::msg(
+                            $event->getRequest()->getSource(),
+                            sprintf('%s => %s', $matches['key'], $self->set($matches['key'], $matches['value']))
+                        )
+                    );
+                }
             }
         );
     }
