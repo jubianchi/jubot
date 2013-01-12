@@ -76,7 +76,7 @@ class Audience extends AbstractPlugin
 
             $event->addResponse(
                 Response::msg(
-                    $channel,
+                    $user ?: $channel,
                     sprintf(
                         'Audience record%s: %d nick(s) on %s',
                         $user ? ' on ' . $channel : '',
