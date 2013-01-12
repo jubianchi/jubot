@@ -65,59 +65,21 @@ class Audience extends AbstractPlugin
         $this->record($channel, $event);
     }
 
-    public function increment($channel, Event $event, $increment = 1)
-    {
-        if (false === isset($this->nicks[$channel])) {
-            $this->nicks[$channel] = 0;
-        }
-
-        if ($this->shouldCount($channel, $event)) {
-            $this->nicks[$channel] += $increment;
-            $this->record($channel, $event);
-        }
-    }
-
-    public function decrement($channel, Event $event, $decrement = 1)
-    {
-        if (false === isset($this->nicks[$channel])) {
-            $this->nicks[$channel] = 0;
-        }
-
-        if ($this->shouldCount($channel, $event)) {
-            $this->nicks[$channel] -= $decrement;
-            $this->nicks[$channel] = $this->nicks[$channel] < 0 ? 0 : $this->nicks[$channel];
-            $this->record($channel, $event);
-        }
-    }
-
     protected function getPatterns($channel)
     {
         return isset($this->config['channels'][$channel]) ? $this->config['channels'][$channel] : array();
     }
 
-    protected function shouldCount($channel, Event $event)
-    {
-        $nick = $event->getRequest()->getSendingUser();
-        $nick = ltrim($nick, '@+');
-
-        foreach ($this->getPatterns($channel) as $pattern) {
-            if (@preg_match($pattern, $nick) || $nick === $pattern) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public function displayRecord($channel, Event $event)
+    public function displayRecord($channel, Event $event, $user = null)
     {
         if (isset($this->records[$channel]) && $this->records[$channel] > 0) {
             $event->addResponse(
                 Response::msg(
                     $channel,
                     sprintf(
-                        'Audience record: %d nick(s) on %s',
-                        $this->records[$channel],
+                        'Audience record%s: %d nick(s) on %s',
+						$user ? ' on ' . $channel : '',
+						$this->records[$channel],
                         $this->dates[$channel]
                     )
                 )
@@ -179,13 +141,13 @@ class Audience extends AbstractPlugin
         $this->bot->onJoin(function(Event $event) use ($self) {
             $chan = $event->getRequest()->getSource();
 
-            $self->increment($chan, $event);
+			$event->addResponse(new Response('NAMES', $chan));
         });
 
         $this->bot->onPart(function(Event $event) use ($self) {
             $chan = $event->getRequest()->getSource();
 
-            $self->decrement($chan, $event);
+			$event->addResponse(new Response('NAMES', $chan));
         });
 
         $this->bot->onChannel(
@@ -198,14 +160,13 @@ class Audience extends AbstractPlugin
         );
 
         $this->bot->onPrivateMessage(
-            '/^!audience add (?P<channel>([#&][^\x07\x2C\s]{0,200})) (?P<audience>\d+)/',
+            '/^!audience refresh (?P<channel>([#&][^\x07\x2C\s]{0,200}))/',
             function(Event $event) use ($self) {
                 $matches = $event->getMatches();
                 $channel = $matches['channel'];
-                $audience = $matches['audience'];
 
                 if ($self->hasCredential($event->getRequest()->getSendingUser())) {
-                    $self->increment($channel, $event, $audience);
+					$event->addResponse(new Response('NAMES', $channel));
                 }
             }
         );
@@ -217,6 +178,7 @@ class Audience extends AbstractPlugin
                 $channel = $matches['channel'];
                 $user = $event->getRequest()->getSendingUser();
 
+				$self->displayRecord($channel, $event, $user);
                 $self->displayCurrent($channel, $event, $user);
             }
         );
@@ -229,7 +191,7 @@ class Audience extends AbstractPlugin
         $event->addResponse(Response::msg($event->getRequest()->getSource(), '*    [priv] !audience <#channel>'));
 
         if ($this->hasCredential($event->getRequest()->getSendingUser())) {
-            $event->addResponse(Response::msg($event->getRequest()->getSource(), '*    [priv] !audience add <#channel> <audience>'));
+            $event->addResponse(Response::msg($event->getRequest()->getSource(), '*    [priv] !audience refresh <#channel>'));
         }
 
         $event->addResponse(Response::msg($event->getRequest()->getSource(), '*'));
