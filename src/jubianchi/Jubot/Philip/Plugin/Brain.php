@@ -83,7 +83,7 @@ class Brain extends AbstractPlugin
 
     public function get($key, $default = null)
     {
-        $sql = 'SELECT * FROM brain WHERE key LIKE "' . sqlite_escape_string($key) . '"';
+        $sql = 'SELECT * FROM brain WHERE key LIKE \'' . sqlite_escape_string($key) . '\'';
         $query = $this->brain->query($sql);
 
         $results = array();
@@ -93,18 +93,18 @@ class Brain extends AbstractPlugin
 
         $count = count($results);
 
-        return ($count === 0 ? $default : ($count === 1 ? $results[$key] : $results));
+        return ($count === 0 ? $default : ($count === 1 ? array_pop($results) : $results));
     }
 
     public function set($key, $value)
     {
-        $sql = 'SELECT COUNT(*) as num FROM brain WHERE key="' . sqlite_escape_string($key) . '"';
+        $sql = 'SELECT COUNT(*) as num FROM brain WHERE key=\'' . sqlite_escape_string($key) . '\'';
         $result = $this->brain->querySingle($sql);
 
         if ($result === 0) {
-            $sql = 'INSERT INTO brain VALUES("' . sqlite_escape_string($key) . '", "' . sqlite_escape_string($value) . '")';
+            $sql = 'INSERT INTO brain VALUES(\'' . sqlite_escape_string($key) . '\', \'' . sqlite_escape_string($value) . '\')';
         } else {
-            $sql = 'UPDATE brain SET value="' . sqlite_escape_string($value) . '" WHERE key="' . sqlite_escape_string($key) . '"';
+            $sql = 'UPDATE brain SET value=\'' . sqlite_escape_string($value) . '\' WHERE key=\'' . sqlite_escape_string($key) . '\'';
         }
 
         $this->brain->exec($sql);

@@ -36,6 +36,7 @@ class Bot extends BaseCommand
         $bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\Audience($bot));
         $bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\Github($bot));
         $bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\Travis($bot));
+        $bot->loadPlugin(new \jubianchi\Jubot\Philip\Plugin\WhatIs($bot));
 
         $bot->run();
     }
