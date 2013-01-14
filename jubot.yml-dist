@@ -34,4 +34,4 @@ brain:
 
 audience:
     channels:
-        "%channel%": ["/^ChanServ$/", "/^jubot(?:-\w+)?$/"]
+        "%channel%": ["/^[@\+]?ChanServ$/", "/^[@\+]?jubot(?:-\w+)?$/"]
