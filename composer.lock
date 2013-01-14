@@ -7,12 +7,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jubianchi/philip.git",
-                "reference": "e2ba9aaf5fc46cbb201528a825a57d73d332a91a"
+                "reference": "9d57409a5fd4a242aaef107ab81a6a02b3a56e09"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jubianchi/philip/zipball/e2ba9aaf5fc46cbb201528a825a57d73d332a91a",
-                "reference": "e2ba9aaf5fc46cbb201528a825a57d73d332a91a",
+                "url": "https://api.github.com/repos/jubianchi/philip/zipball/9d57409a5fd4a242aaef107ab81a6a02b3a56e09",
+                "reference": "9d57409a5fd4a242aaef107ab81a6a02b3a56e09",
                 "shasum": ""
             },
             "require": {
@@ -20,7 +20,10 @@
                 "monolog/monolog": "1.2.*",
                 "symfony/event-dispatcher": "2.1.*"
             },
-            "time": "2013-01-12 21:36:59",
+            "require-dev": {
+                "atoum/atoum": "dev-master"
+            },
+            "time": "2013-01-14 19:10:26",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -360,9 +363,7 @@
             "homepage": "http://symfony.com"
         }
     ],
-    "packages-dev": [
-
-    ],
+    "packages-dev": null,
     "aliases": [
 
     ],
