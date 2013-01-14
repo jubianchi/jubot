@@ -72,6 +72,18 @@ class Admin extends AbstractPlugin
         );
 
         $this->bot->onPrivateMessage(
+            '/^!me (?P<channel>[#&]?[^\x07\x2C\s]{0,200}) (?P<message>.+)/',
+            function(Event $event) use ($self) {
+                $matches = $event->getMatches();
+                $user = $event->getRequest()->getSendingUser();
+
+                if ($self->hasCredential($user)) {
+                    $event->addResponse(Response::action($matches['channel'], $matches['message']));
+                }
+            }
+        );
+
+        $this->bot->onPrivateMessage(
             '/^!quit(?: (?P<message>.*)|)/',
             function(Event $event) use ($self) {
                 $matches = $event->getMatches();
@@ -97,6 +109,15 @@ class Admin extends AbstractPlugin
                 }
             }
         );
+
+        $this->bot->onPrivateMessage(
+            '/^!(?:stop|kill)$/',
+            function(Event $event) use ($self) {
+                $event->addResponse(Response::action($event->getRequest()->getSendingUser(), 'will stop...'));
+
+                $self->getBot()->askStop();
+            }
+        );
     }
 
     public function displayHelp(Event $event)
@@ -107,7 +128,9 @@ class Admin extends AbstractPlugin
             $event->addResponse(Response::msg($event->getRequest()->getSource(), '*    [priv] !join <#channel[ #channel]>'));
             $event->addResponse(Response::msg($event->getRequest()->getSource(), '*    [priv] !leave <#channel[ #channel]>'));
             $event->addResponse(Response::msg($event->getRequest()->getSource(), '*    [priv] !say <#channel|nick> <message>'));
+            $event->addResponse(Response::msg($event->getRequest()->getSource(), '*    [priv] !me <#channel|nick> <message>'));
             $event->addResponse(Response::msg($event->getRequest()->getSource(), '*    [priv] !nick <nick>'));
+            $event->addResponse(Response::msg($event->getRequest()->getSource(), '*    [priv] !stop'));
             $event->addResponse(Response::msg($event->getRequest()->getSource(), '*'));
         }
     }
