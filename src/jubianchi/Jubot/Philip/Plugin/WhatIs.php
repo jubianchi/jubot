@@ -17,7 +17,7 @@ class WhatIs extends AbstractPlugin
         $bot = $this->bot;
 
         $this->bot->onChannel(
-            '/^(?P<nick>[^\s]+) (?P<verb>est|is) (?P<what>(?:((?:an?|the)|(?:une?|le|la)) )?((?:[\w ]+)*))/',
+            '/^!(?P<nick>[^\s]+) (?P<verb>est|is) (?P<what>(?:((?:an?|the)|(?:une?|le|la)) )?(.*))/',
             function(Event $event) use ($bot) {
                 $matches = $event->getMatches();
                 $channel = $event->getRequest()->getSource();
@@ -43,8 +43,8 @@ class WhatIs extends AbstractPlugin
                 } else {
                     $event->addResponse(
                         Response::msg(
-                            $channel,
-                            sprintf('I can\'t find %s on channel', $nick)
+                            $event->getRequest()->getSendingUser(),
+                            sprintf('I can\'t find %s on channel %s', $nick, $event->getRequest()->getSource())
                         )
                     );
                 }
@@ -80,7 +80,7 @@ class WhatIs extends AbstractPlugin
     public function displayHelp(Event $event)
     {
         $event->addResponse(Response::msg($event->getRequest()->getSource(), '* What is'));
-        $event->addResponse(Response::msg($event->getRequest()->getSource(), '*    <nick> is <what>'));
+        $event->addResponse(Response::msg($event->getRequest()->getSource(), '*    !<nick> is <what>'));
         $event->addResponse(Response::msg($event->getRequest()->getSource(), '*    !<nick>'));
         $event->addResponse(Response::msg($event->getRequest()->getSource(), '*'));
     }
