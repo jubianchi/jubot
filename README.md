@@ -1,4 +1,7 @@
 # jubot
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/jubianchi/jubot.svg)](https://greenkeeper.io/)
+
 #### My Hubot configuration
 
 ## Requirements
